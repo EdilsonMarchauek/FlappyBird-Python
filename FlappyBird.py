@@ -1,7 +1,6 @@
 import pygame
 import os
 import random
-import time
 
 TELA_LARGURA = 500
 TELA_ALTURA = 800
@@ -162,7 +161,12 @@ class Chao:
         tela.blit(self.IMAGEM, (self.x2, self.y))
 
 
-def desenhar_tela(tela, passaros, canos, chao, pontos):
+def menu(tela):
+    texto = FONTE_INICIO.render('Pular: <espaço>| Reiniciar: <enter>| Sair: <esc>', False, (255, 255, 255))
+    tela.blit(texto, (TELA_LARGURA - 50 - texto.get_width(), 90))
+
+
+def desenhar_tela(tela, passaros, canos, chao, pontos, gameover):
     tela.blit(IMAGEM_BACKGROUND, (0, 0))
     for passaro in passaros:
         passaro.desenhar(tela)
@@ -173,13 +177,19 @@ def desenhar_tela(tela, passaros, canos, chao, pontos):
     tela.blit(texto, (TELA_LARGURA - 10 - texto.get_width(), 10))
 
     if pontos == 0:
-        texto = FONTE_INICIO.render('Pular: <espaço>| Reiniciar: <enter>| Sair: <esc>', False, (255, 255, 255))
-        tela.blit(texto, (TELA_LARGURA - 50 - texto.get_width(), 90))
+        menu(tela)
+
+    if gameover == "sim":
+        menu(tela)
+        texto1 = FONTE_INICIO.render('GAME OVER !!!', False, (255, 255, 255))
+        tela.blit(texto1, (TELA_LARGURA - 180 - texto1.get_width(), 300))
 
     chao.desenhar(tela)
     pygame.display.update()
 
+
 def main():
+    global gameover
     passaros = [Passaro(230, 350)]
     chao = Chao(730)
     canos = [Cano(700)]
@@ -214,6 +224,7 @@ def main():
 
         adicionar_cano = False
         remover_canos = []
+
         for cano in canos:
             for i, passaro in enumerate(passaros):
                 if cano.colidir(passaro):
@@ -232,25 +243,13 @@ def main():
             canos.remove(cano)
 
         for i, passaro in enumerate(passaros):
+            gameover = "nao"
             if (passaro.y + passaro.imagem.get_height()) > chao.y or passaro.y < 0:
                 passaros.pop(i)
+                gameover = "sim"
 
-        desenhar_tela(tela, passaros, canos, chao, pontos)
+        desenhar_tela(tela, passaros, canos, chao, pontos, gameover)
 
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
